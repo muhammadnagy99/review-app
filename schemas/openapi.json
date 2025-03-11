@@ -28,7 +28,7 @@
         },
         "responses": {
           "201": { "description": "Review created successfully" },
-          "400": { "description": "Invalid review type" },
+          "400": { "description": "Invalid review data" },
           "500": { "description": "Error creating review" }
         }
       },
@@ -40,30 +40,71 @@
             "name": "serviceId",
             "in": "query",
             "required": false,
-            "schema": {
-              "$ref": "./review.json#/properties/serviceId"
-            }
+            "schema": { "type": "string" }
           },
           {
             "name": "clientId",
             "in": "query",
             "required": false,
-            "schema": {
-              "$ref": "./review.json#/properties/clientId"
-            }
+            "schema": { "type": "string" }
           },
           {
             "name": "reviewType",
             "in": "query",
             "required": false,
-            "schema": {
-              "$ref": "./review.json#/properties/reviewType"
-            }
+            "schema": { "type": "string", "enum": ["client", "provider"] }
           }
         ],
         "responses": {
           "200": { "description": "List of reviews" },
           "500": { "description": "Error fetching reviews" }
+        }
+      }
+    },
+    "/api/reviews/{id}": {
+      "put": {
+        "summary": "Update an existing review",
+        "tags": ["Reviews"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Review updated successfully" },
+          "400": { "description": "Invalid review data" },
+          "404": { "description": "Review not found" },
+          "500": { "description": "Error updating review" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a review",
+        "tags": ["Reviews"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Review deleted successfully" },
+          "404": { "description": "Review not found" },
+          "500": { "description": "Error deleting review" }
         }
       }
     }

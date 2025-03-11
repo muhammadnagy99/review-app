@@ -28,7 +28,27 @@ const getReviews = async (filter) => {
     return await Review.find(filter);
 };
 
+// Function to update a review by ID
+const updateReview = async (reviewId, updateData) => {
+    const updatedReview = await Review.findByIdAndUpdate(reviewId, updateData, { new: true, runValidators: true });
+    if (!updatedReview) {
+        throw new Error('Review not found');
+    }
+    return updatedReview;
+};
+
+// Function to delete a review by ID
+const deleteReview = async (reviewId) => {
+    const deletedReview = await Review.findByIdAndDelete(reviewId);
+    if (!deletedReview) {
+        throw new Error('Review not found');
+    }
+    return deletedReview;
+};
+
 module.exports = {
     createReview,
     getReviews,
+    updateReview,
+    deleteReview
 };

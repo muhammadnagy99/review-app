@@ -1,19 +1,42 @@
 const express = require('express');
-const fs = require('fs');
-const { createReview, getReviews } = require('../controllers/reviewController');
+const { createReview, getReviews, updateReview, deleteReview } = require('../controllers/reviewController');
 
 const router = express.Router();
 
-// Load OpenAPI specification from the root schemas folder
-const openApiSpec = JSON.parse(fs.readFileSync('./schemas/openapi.json', 'utf8'));
+router.post('/', async (req, res) => {
+    try {
+        const review = await createReview(req.body);
+        res.status(201).json(review);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
-// Use the OpenAPI spec for documentation
-router.post('/', createReview);
-router.get('/', getReviews);
+router.get('/', async (req, res) => {
+    try {
+        const reviews = await getReviews(req.query);
+        res.json(reviews);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
-// Optionally, you can expose the OpenAPI spec as an endpoint
-router.get('/openapi.json', (req, res) => {
-    res.json(openApiSpec);
+router.put('/:id', async (req, res) => {
+    try {
+        const updatedReview = await updateReview(req.params.id, req.body);
+        res.json(updatedReview);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    try {
+        await deleteReview(req.params.id);
+        res.json({ message: 'Review deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 });
 
 module.exports = router;
