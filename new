@@ -53,6 +53,10 @@ connectRabbitMQ().then(() => {
     console.error("Failed to start RabbitMQ consumer:", err);
 });
 
+// only for test purpose
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'API is running successfully!' });
+});
 
 // Start the server
 app.listen(PORT, () => {
