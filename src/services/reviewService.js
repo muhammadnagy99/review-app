@@ -1,54 +1,55 @@
-const mongoose = require('mongoose');
-const Ajv = require('ajv');
-const fs = require('fs');
-const addFormats = require('ajv-formats');
 const Review = require('../models/review');
 
-// Load the review schema from the JSON file
-const reviewSchema = JSON.parse(fs.readFileSync('./schemas/review.json', 'utf8'));
-const ajv = new Ajv();
-addFormats(ajv);
-const validate = ajv.compile(reviewSchema);
-
-// Function to create a review
+/**
+ * Create a new review.
+ * @param {Object} reviewData - The review data to create.
+ * @returns {Promise<Object>} The created review.
+ */
 const createReview = async (reviewData) => {
-    // Validate the review data
-    const valid = validate(reviewData);
-    if (!valid) {
-        throw new Error('Invalid review data: ' + JSON.stringify(validate.errors));
+    try {
+        const review = new Review(reviewData);
+        return await review.save();
+    } catch (error) {
+        console.error('Error creating review:', error);
+        throw new Error('Error creating review');
     }
-
-    const review = new Review(reviewData);
-    await review.save();
-    return review;
 };
 
-// Function to get reviews based on filter criteria
+/**
+ * Get all reviews based on a filter.
+ * @param {Object} filter - The filter to apply.
+ * @returns {Promise<Array>} The list of reviews.
+ */
 const getReviews = async (filter) => {
-    return await Review.find(filter);
-};
-
-// Function to update a review by ID
-const updateReview = async (reviewId, updateData) => {
-    const updatedReview = await Review.findByIdAndUpdate(reviewId, updateData, { new: true, runValidators: true });
-    if (!updatedReview) {
-        throw new Error('Review not found');
+    try {
+        return await Review.find(filter);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        throw new Error('Error fetching reviews');
     }
-    return updatedReview;
 };
 
-// Function to delete a review by ID
+/**
+ * Delete a review by ID.
+ * @param {string} reviewId - The ID of the review to delete.
+ * @returns {Promise<Object>} A success message.
+ */
 const deleteReview = async (reviewId) => {
-    const deletedReview = await Review.findByIdAndDelete(reviewId);
-    if (!deletedReview) {
-        throw new Error('Review not found');
+    try {
+        const deletedReview = await Review.findByIdAndDelete(reviewId);
+        if (!deletedReview) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('Review not found');
+        }
+        return { message: 'Review deleted successfully' };
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        throw new Error('Error deleting review');
     }
-    return deletedReview;
 };
 
 module.exports = {
     createReview,
     getReviews,
-    updateReview,
-    deleteReview
+    deleteReview,
 };

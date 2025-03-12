@@ -10,9 +10,9 @@ const connectRabbitMQ = async () => {
 
         const queueName = 'zokhrof.interiordesigner.reviews.q';
 
-        // Declare queue explicitly (idempotent operation)
+        // Declare queue explicitly
         await channel.assertQueue(queueName, {
-            durable: true, // recommended to persist messages
+            durable: true,
         });
 
         // Start consuming messages
@@ -34,9 +34,9 @@ const connectRabbitMQ = async () => {
                     console.error("Error processing message:", error);
 
                     if (replyQueue) {
-                        channel.sendToQueue(replyQueue, Buffer.from(JSON.stringify({ 
-                            status: 'error', 
-                            message: error.message 
+                        channel.sendToQueue(replyQueue, Buffer.from(JSON.stringify({
+                            status: 'error',
+                            message: error.message
                         })), { correlationId });
                     }
                 }

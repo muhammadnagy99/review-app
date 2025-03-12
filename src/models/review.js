@@ -1,15 +1,13 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
-const mongoosify = require('mongoosify');
 
-// Load the review schema from the JSON file
-const reviewSchemaJson = JSON.parse(fs.readFileSync('./schemas/review.json', 'utf8'));
+const reviewSchema = new mongoose.Schema({
+    serviceId: { type: String, required: true },
+    clientId: { type: String, required: true },
+    providerId: { type: String, required: true },
+    reviewType: { type: String, enum: ['client', 'provider'], required: true },
+    comment: { type: String, maxLength: 500, required: true },
+    rating: { type: Number, min: 1, max: 5, required: true },
+    createdAt: { type: Date, default: Date.now },
+});
 
-// Convert the JSON schema to a Mongoose schema using mongoosify
-const mySchema = mongoosify(reviewSchemaJson);
-
-// Create a Mongoose schema
-const mongooseSchema = new mongoose.Schema(mySchema);
-
-// Create and export the Mongoose model
-module.exports = mongoose.model('Review', mongooseSchema);
+module.exports = mongoose.model('Review', reviewSchema);

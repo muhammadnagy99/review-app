@@ -28,7 +28,7 @@
     "@babel/register": "^7.25.9",
     "@cucumber/cucumber": "^11.2.0",
     "axios": "^1.8.1",
-    "chai": "^5.2.0",
+    "chai": "^4.3.6",
     "eslint": "^9.21.0",
     "eslint-config-google": "^0.14.0",
     "eslint-define-config": "^2.1.0",

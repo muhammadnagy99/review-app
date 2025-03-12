@@ -1,42 +1,35 @@
 const express = require('express');
-const { createReview, getReviews, updateReview, deleteReview } = require('./controllers/reviewController');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const reviewRoutes = require('./routes/reviewRoutes');
+const app = express();
 
-const router = express.Router();
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-router.post('/', async (req, res) => {
-    try {
-        const review = await createReview(req.body);
-        res.status(201).json(review);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+// MongoDB Connection
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/reviewsDB';
+mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
+// Routes
+app.use('/reviews', reviewRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong!' });
 });
 
-router.get('/', async (req, res) => {
-    try {
-        const reviews = await getReviews(req.query);
-        res.json(reviews);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
-router.put('/:id', async (req, res) => {
-    try {
-        const updatedReview = await updateReview(req.params.id, req.body);
-        res.json(updatedReview);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
-
-router.delete('/:id', async (req, res) => {
-    try {
-        await deleteReview(req.params.id);
-        res.json({ message: 'Review deleted successfully' });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
-
-module.exports = router;
+module.exports = app;
